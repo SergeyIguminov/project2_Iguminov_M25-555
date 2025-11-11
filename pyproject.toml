@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "project2-iguminov-m25-555"
+version = "0.1.0"
+description = ""
+authors = ["Sergey Iguminov <Sergey.iguminov@yandex.ru>"]
+readme = "README.md"
+packages = [
+	{ include = "src"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.0"
+
+[tool.poetry.scripts]
+project = "src.primitive_db.main:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
