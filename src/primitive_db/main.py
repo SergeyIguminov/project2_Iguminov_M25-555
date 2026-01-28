@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import prompt
-import engine
+from src.primitive_db import engine
 
 
 def main():
@@ -14,7 +13,6 @@ if __name__ == "__main__":
 
 
 def welcome():
-    print("Первая попытка запустить проект!")
     print("***")
     print("<command> exit - выйти из программы")
     print("<command> help - справочная информация")

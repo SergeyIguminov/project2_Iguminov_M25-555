@@ -26,8 +26,16 @@ def save_metadata(filepath, data):
         filepath - путь к JSON-файлу
         data - Данные для сохранения в виде словаря
     """
-    try:
-        with open(filepath, "w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"Ошибка при сохранении файла {filepath}: {e}")
+    with open(filepath, "w") as f:
+        json.dump(data, f)
+
+
+def load_table_data(table_path):
+    with open(table_path) as f:
+        data = json.load(f)
+        return data
+
+
+def save_table_data(table_path, data):
+    with open(table_path, "w") as f:
+        json.dump(data, f)
