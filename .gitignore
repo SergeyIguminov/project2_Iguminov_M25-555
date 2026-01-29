@@ -1,9 +1,5 @@
-# Virtual environments
-.venv/
-venv/
-env/
-
-# Build and distribution  
-dist/
-build/
-*.egg-info/
+.venv
+__pycache__
+dist
+data
+db_meta.json

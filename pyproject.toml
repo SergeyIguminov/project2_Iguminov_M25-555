@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "project2-iguminov-m25-555"
 version = "0.1.0"
-description = ""
+description = "Database application"
 authors = ["Sergey Iguminov <Sergey.iguminov@yandex.ru>"]
 readme = "README.md"
 packages = [
@@ -27,6 +27,7 @@ ruff = "^0.1.0"
 
 [tool.poetry.scripts]
 project = "src.primitive_db.main:main"
+database = "src.primitive_db.main:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

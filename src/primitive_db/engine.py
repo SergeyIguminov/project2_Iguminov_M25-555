@@ -1,4 +1,6 @@
+import os
 import shlex
+import time
 
 import prompt
 
@@ -9,7 +11,32 @@ METADATA_PATH = "src/db_meta.json"
 TABLE_DATA_DIR = "data"
 
 
+def create_cacher(func):
+    """
+    Отвечает за кэширование вызовов func
+    Вызов перед основным циклом
+    """
+    func_cache = {}
+
+    def cache_result(key, *args, **kwargs):
+        start_seek = time.monotonic()
+        if key in func_cache:
+            stop_seek = time.monotonic()
+            result_seek = round(stop_seek - start_seek, 3)
+            print(f"Функция выполнилась за {result_seek} секунд")
+        else:
+            func_cache[key] = func(*args, **kwargs)
+        return func_cache[key]
+
+    return cache_result
+
+
 def run():
+    if not os.path.exists(METADATA_PATH):
+        os.makedirs("src", exist_ok=True)
+        with open(METADATA_PATH, "w") as file:
+            file.write(str(dict()))
+    select_cached = create_cacher(core.select)
     while True:
         metadata = utils.load_metadata(METADATA_PATH)
         user_input = prompt.string("Введите команду: ")
@@ -73,7 +100,9 @@ def run():
                                 args[4] + "=" + args[6], preferred_type
                             )
                             if success:
-                                select_data = core.select(table_data, clause)
+                                select_data = select_cached(
+                                    str(args), table_data, clause
+                                )
                                 core.print_table(metadata, table_name, select_data)
                             else:
                                 print(
@@ -90,6 +119,7 @@ def run():
                     else:
                         print(f"Ошибка: Таблица '{table_name}' не существует.")
                         continue
+                    select_data = select_cached(str(args), table_data)
                     core.print_table(metadata, table_name)
                 else:
                     print("Некорректный синтаксис. Попробуйте снова.")
@@ -212,7 +242,13 @@ def print_help():
     print("<command> create_table <имя_таблицы> <столбец1:тип> .. - создать таблицу")
     print("<command> list_tables - показать список всех таблиц")
     print("<command> drop_table <имя_таблицы> - удалить таблицу")
-
+    print("<command> select from <имя_таблицы> where <столбец> = <значение> ")
+    print("- прочитать записи по условию.")
+    print("<command> select from <имя_таблицы> - прочитать все записи.")
+    print("<command> update <имя_таблицы> set <столбец1> = <новое_значение1> ")
+    print("where <столбец_условия> = <значение_условия> - обновить запись.")
+    print("<command> delete from <имя_таблицы> where <столбец> = <значение> ")
+    print("- удалить запись.")
     print("\nОбщие команды:")
     print("<command> exit - выход из программы")
     print("<command> help - справочная информация\n")

@@ -1,0 +1,67 @@
+import shlex
+import time
+
+import prompt
+
+
+def handle_db_errors(func):
+    """
+    Обрабатывает ошибки, которые
+    не были предусмотрены в логике функций.
+    """
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except FileNotFoundError:
+            print("Ошибка: Файл данных не найден. ")
+        except KeyError as e:
+            print(f"Ошибка: Таблица или столбец {e} не найден.")
+        except ValueError as e:
+            print(f"Ошибка валидации: {e}")
+        except TypeError:
+            print("Ошибка: Словарь или список был " "изменен некорректно.")
+        except Exception as e:
+            print(f"Произошла непредвиденная ошибка: {e}")
+
+    return wrapper
+
+
+def confirm_action(action_name=""):
+    """
+    Для подтверждения операции
+    нужен ответ пользователя 'y'/'yes'/'да'.
+    """
+
+    def real_decorator(func):
+        def wrapper(*args, **kwargs):
+            print(f"Вы уверены, что хотите выполнить '{action_name}'? [y/n]:", end="")
+            user_input = prompt.string()
+            user_input = shlex.split(user_input)
+            if not user_input:
+                return None
+            if user_input[0].lower() in ["y", "yes", "да"]:
+                return func(*args, **kwargs)
+            else:
+                return None
+
+        return wrapper
+
+    return real_decorator
+
+
+def log_time(func):
+    """
+    Считает время выполнения функции
+    в секундах с округлением до тысячных
+    """
+
+    def wrapper(*args, **kwargs):
+        start_time = time.monotonic()
+        result = func(*args, **kwargs)
+        end_time = time.monotonic()
+        result_time = round(end_time - start_time, 3)
+        print(f"Функция {func.__name__} выполнилась за {result_time} секунд")
+        return result
+
+    return wrapper

@@ -2,11 +2,13 @@ import os
 
 from prettytable import PrettyTable
 
+import src.decorators as decorators
 import src.primitive_db.utils as utils
 
 TABLE_DATA_DIR = "data"
 
 
+@decorators.handle_db_errors
 def create_table(metadata, table_name, columns):
     """
     Создаёт таблицу
@@ -54,6 +56,8 @@ def create_table(metadata, table_name, columns):
         return metadata
 
 
+@decorators.handle_db_errors
+@decorators.log_time
 def insert(metadata, table_name, values):
     """
     Заполняет таблицу данными
@@ -109,6 +113,8 @@ def insert(metadata, table_name, values):
             return table_data
 
 
+@decorators.handle_db_errors
+@decorators.log_time
 def select(table_data, where_clause=None):
     """
     Метод реализует показ данных отдельных столбцов из таблицы c фильтрацией where
@@ -131,6 +137,7 @@ def select(table_data, where_clause=None):
         return table_data
 
 
+@decorators.handle_db_errors
 def update(table_data, set_clause, where_clause):
     """
     Фильтрует записи по where_clause и обновляет в них поля по set_clause
@@ -159,6 +166,8 @@ def update(table_data, set_clause, where_clause):
         return table_data
 
 
+@decorators.confirm_action(action_name="Удаление записи")
+@decorators.handle_db_errors
 def delete(table_data, where_clause):
     """
     Удаляет записи удовлетворяющие условию where_clause
@@ -182,12 +191,15 @@ def delete(table_data, where_clause):
         return table_data
 
 
+@decorators.handle_db_errors
 def list_tables(metadata):
     for table_name in list(metadata.keys()):
         print(f"- {table_name}")
     return metadata
 
 
+@decorators.confirm_action(action_name="Удаление таблицы")
+@decorators.handle_db_errors
 def drop_table(metadata, table_name):
     if table_name not in list(metadata.keys()):
         print(f"Ошибка: Таблица '{table_name}' не существует.")
@@ -199,6 +211,7 @@ def drop_table(metadata, table_name):
         return metadata
 
 
+@decorators.handle_db_errors
 def print_table(metadata, table_name, selected_data=None):
     output_table = PrettyTable()
     table_path = TABLE_DATA_DIR + "/" + table_name + ".json"
